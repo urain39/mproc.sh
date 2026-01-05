@@ -6,13 +6,17 @@ mproc_process() {
   mproc_printf "$mproc_number: $mproc_message"
 }
 
+mproc_finish() {
+  mproc_printf "Finished!"
+}
+
 mproc_create 3
 
 # Tell progress bar we have 10 tasks
 mproc_progress 10
 
 i="1"
-while [ "${i}" -le 10 ]; do
+while [ "${i}" -le 20 ]; do
   mproc_dispatch "Task-${i}"
   
   # Update progress

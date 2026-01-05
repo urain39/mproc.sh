@@ -33,7 +33,12 @@ __mproc_output_pipe=""
 
 mproc_process() {
   # Stub function: Users should override this to define actual job logic.
-  printf '\r\033[K[Worker %s] [STUB] %s\n' "${mproc_number}" "${mproc_message}"
+  :
+}
+
+mproc_finish() {
+  # Stub function: Users should override this to define actual job logic.
+  :
 }
 
 mproc_signal_handler() {
@@ -281,7 +286,7 @@ mproc_create() {
   __mproc_job_max="${__job_count}"
 
   case "${__job_count}" in
-    ''|*[!0-9]*)
+    [!1-5])
       echo "[ERROR] mproc: Invalid job count."
       return 1
       ;;
@@ -347,6 +352,9 @@ mproc_destroy() {
   __mproc_stop_output
 
   wait
+
+  # Call user defined finish callback
+  mproc_finish
 
   __mproc_cleanup
 }
