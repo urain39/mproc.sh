@@ -86,7 +86,7 @@ __mproc_kill_children() {
 __mproc_start_output() {
   # Redirects stdout to stderr via a background pipe process.
   # This prevents garbled output when multiple workers write to stdout simultaneously.
-  mkfifo "${__mproc_output_pipe}" && exec 1<> "${__mproc_output_pipe}" && cat <&1 >&2 & __mproc_output_pid="$!"
+  mkfifo "${__mproc_output_pipe}" && exec 1<> "${__mproc_output_pipe}" && { cat <&1 >&2 & } && __mproc_output_pid="$!"
 }
 
 __mproc_stop_output() {
