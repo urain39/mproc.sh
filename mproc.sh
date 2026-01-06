@@ -186,9 +186,6 @@ __mproc_stop_progress() {
 # --- Cleanup and Maintenance ---
 
 __mproc_cleanup() {
-  __mproc_stop_output
-  __mproc_stop_progress
-
   # Remove temporary directory and file descriptors if active.
   if [ "${__mproc_is_active}" -eq "1" ] && [ -n "${__mproc_root}" ] && [ -d "${__mproc_root}" ]; then
     eval "exec ${__mproc_ready_fd}<&-" 2> /dev/null
@@ -245,10 +242,7 @@ mproc_progress() {
   local __cmd="$1"
 
   if [ "${__mproc_progress_pid}" -eq "0" ]; then
-    __mproc_start_progress
-    if [ "${__mproc_progress_pid}" -eq "0" ]; then
-      return 1
-    fi
+    return 1
   fi
 
   case "${__cmd}" in
@@ -293,6 +287,7 @@ mproc_create() {
   esac
 
   __mproc_root="$(mktemp -d "${TMPDIR:-/tmp}/mproc.XXXXXX}")"
+  __mproc_start_progress
 
   __mproc_output_pipe="${__mproc_root}/.output.pipe"
   __mproc_start_output
@@ -348,12 +343,14 @@ mproc_destroy() {
     __fd="$((__fd + 1))"
   done
 
-  # Stop output before wait to prevent blocking
+  # It's safe to stop now.
+  __mproc_stop_progress
   __mproc_stop_output
 
+  # This is for workers.
   wait
 
-  # Call user defined finish callback
+  # Call user defined finish callback.
   mproc_finish
 
   __mproc_cleanup

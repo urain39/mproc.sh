@@ -3,7 +3,10 @@
 
 mproc_process() {
   sleep 0.5
-  mproc_printf "$mproc_number: $mproc_message"
+  mproc_printf "${mproc_number}: ${mproc_message}"
+
+  # Update progress
+  mproc_progress tick
 }
 
 mproc_finish() {
@@ -13,15 +16,12 @@ mproc_finish() {
 mproc_create 3
 
 # Tell progress bar we have 10 tasks
-mproc_progress 10
+mproc_progress 20
 
 i="1"
 while [ "${i}" -le 20 ]; do
   mproc_dispatch "Task-${i}"
-  
-  # Update progress
-  mproc_progress tick
-  
+
   i="$((i + 1))"
 done
 
