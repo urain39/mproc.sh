@@ -6,7 +6,7 @@ A lightweight, POSIX-compliant shell library for managing multiple background pr
 
 *   **Simple API**: Easy-to-use functions to create pools and dispatch tasks.
 *   **Built-in Progress Bar**: Includes an `awk`-based progress bar with ETA calculation and animation.
-*   **Safe Variable Handling**: Strict quoting style ensures robustness with filenames containing spaces or special characters.
+*   **Synchronized Output**: Worker processes write output synchronously to prevent interleaving and terminal display corruption.
 
 ## Requirements
 
@@ -19,7 +19,6 @@ A lightweight, POSIX-compliant shell library for managing multiple background pr
 Simply source the `mproc.sh` file in your script:
 
 ```sh
-#!/bin/sh
 . ./mproc.sh
 ```
 

@@ -5,7 +5,7 @@
 # Source URL: https://github.com/urain39/myims
 # Last Updated: 2025-04-14 17:17:35 +0800
 # Library: mproc (Multi-Process Shell Library)
-# Version: v0.0.9-alpha
+# Version: v0.1.0-alpha
 # Required Commands: coreutils, gawk / busybox awk, pgrep
 ##################################################################################
 
