@@ -1,4 +1,5 @@
 #!/bin/sh
+
 . ./mproc.sh
 
 mproc_process() {
@@ -15,7 +16,7 @@ mproc_finish() {
 
 mproc_create 3
 
-# Tell progress bar we have 10 tasks
+# Tell progress bar we have 20 tasks
 mproc_progress 20
 
 i="1"

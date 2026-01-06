@@ -186,8 +186,11 @@ __mproc_stop_progress() {
 # --- Cleanup and Maintenance ---
 
 __mproc_cleanup() {
+  __mproc_stop_progress
+  __mproc_stop_output
+
   # Remove temporary directory and file descriptors if active.
-  if [ "${__mproc_is_active}" -eq "1" ] && [ -n "${__mproc_root}" ] && [ -d "${__mproc_root}" ]; then
+  if [ "${__mproc_is_active}" -eq "1" ]; then
     eval "exec ${__mproc_ready_fd}<&-" 2> /dev/null
     eval "exec ${__mproc_ready_fd}>&-" 2> /dev/null
     rm -rf "${__mproc_root}"
@@ -279,6 +282,7 @@ mproc_create() {
   local __job_count="${1:-2}"
   __mproc_job_max="${__job_count}"
 
+  # shellcheck disable=SC2249
   case "${__job_count}" in
     [!1-5])
       echo "[ERROR] mproc: Invalid job count."
@@ -302,14 +306,14 @@ mproc_create() {
   # Fork worker processes.
   # Workers start from FD 3.
   local __fd="3"
-  local __limit="$((__job_count + 2))"
-  while [ "${__fd}" -le "${__limit}" ]; do
+  local __fd_max="$((__job_count + 2))"
+  while [ "${__fd}" -le "${__fd_max}" ]; do
     local __worker_pipe="${__mproc_root}/.worker_${__fd}.pipe"
     mkfifo "${__worker_pipe}"
     eval "exec ${__fd}<> '${__worker_pipe}'"
 
     __mproc_worker "${__fd}" &
-    __fd="$((__fd + 1))"
+    : "$((__fd += 1))"
   done
 
   __mproc_is_active="1"
@@ -336,21 +340,20 @@ mproc_destroy() {
     return 0
   fi
 
-  local __fd="3"
-  local __limit="$((__mproc_job_max + 2))"
-  while [ "${__fd}" -le "${__limit}" ]; do
-    printf '%s\n' "__MPROC_EXIT__" >&"${__fd}"
-    __fd="$((__fd + 1))"
+  local __job_count=0
+  while [ "${__job_count}" -lt "${__mproc_job_max}" ]; do
+    mproc_dispatch "__MPROC_EXIT__"
+    : $((__job_count += 1))
   done
 
   # It's safe to stop now.
   __mproc_stop_progress
   __mproc_stop_output
 
-  # This is for workers.
+  # Waits for workers to exit.
   wait
 
-  # Call user defined finish callback.
+  # Calls user defined finish callback.
   mproc_finish
 
   __mproc_cleanup

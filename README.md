@@ -78,10 +78,14 @@ The library includes a built-in progress bar.
 
 ```sh
 #!/bin/sh
+
 . ./mproc.sh
 
 mproc_process() {
   sleep 0.5
+
+  # Update progress
+  mproc_progress tick
 }
 
 mproc_create 3
@@ -92,9 +96,6 @@ mproc_progress 10
 i="1"
 while [ "${i}" -le 10 ]; do
   mproc_dispatch "Task-${i}"
-
-  # Update progress
-  mproc_progress tick
 
   i="$((i + 1))"
 done
