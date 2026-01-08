@@ -101,3 +101,7 @@ done
 
 mproc_destroy
 ```
+
+## Known Issues
+
+When task execution time is less than 0.05 seconds, the progress bar may **swap positions with the final task output**.
