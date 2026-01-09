@@ -284,7 +284,9 @@ mproc_create() {
 
   # shellcheck disable=SC2249
   case "${__job_count}" in
-    [!1-5])
+    [1-5])
+      ;;
+    *)
       echo "[ERROR] mproc: Invalid job count."
       return 1
       ;;
